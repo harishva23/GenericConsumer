@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package com.example.GenericProducer.schema;
+
+option java_package = "com.example.GenericProducer.schema";
+option java_outer_classname = "CarProto";
+
+message Car {
+  string carId = 1;
+  string carNumber = 2;
+  double speed = 3;
+  double latitude = 4;
+  double longitude = 5;
+}
