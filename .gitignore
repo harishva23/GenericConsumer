@@ -1,9 +1,14 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 resources/application.properties
+bin/
 
 ### STS ###
 .apt_generated
@@ -26,9 +31,6 @@ resources/application.properties
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
