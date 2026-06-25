@@ -1,6 +1,7 @@
 package com.example.GenericConsumer.clients;
 
 import java.util.Properties;
+import java.util.Random;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -17,10 +18,10 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 
 @Component
 public class KafkaConsumerClient {
-
+    Random random = new Random();
     public static final String FALSE = "false";
     private static final String GROUP_ID = "car-consumer";
-    private static final String CLIENT_ID = "car-consumer1";
+    private static String CLIENT_ID = "car-consumer1";
     private static final String SECURITY_PROTOCOL = "SASL_PLAINTEXT";
     private static final String SASL_MECHANISM = "SCRAM-SHA-512";
     private static final String SASL_JAAS_CONFIG = "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
@@ -36,7 +37,7 @@ public class KafkaConsumerClient {
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keDeserializerTypes.getClassName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializerTypes.getClassName());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
-        props.put(ConsumerConfig.CLIENT_ID_CONFIG, CLIENT_ID);
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, CLIENT_ID+"-" + random.nextInt(1000));
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);

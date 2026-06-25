@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.GenericConsumer.clients.KafkaConsumerClient;
 import com.example.GenericConsumer.enums.KafkaDeserializerTypes;
-import com.example.schema.CarProto.Car;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +36,12 @@ public class CarConsumerService implements SmartLifecycle {
     @Value("${schema.registry.url}")
     private String schemaRegistryUrl;
 
-    private static final String PROTO_TOPIC = "test-schema-car-protobuf";
+    @Value("${string.topic.name}")
+    private String stringTopic;
+
     
     private ExecutorService executorService;
-    private KafkaConsumer<String, Car> consumer;
+    private KafkaConsumer<String, String> consumer;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private volatile boolean started = false;
 
@@ -76,22 +77,22 @@ public class CarConsumerService implements SmartLifecycle {
                 password, 
                 schemaRegistryUrl, 
                 KafkaDeserializerTypes.STRING_DESERIALIZER, 
-                KafkaDeserializerTypes.PROTOBUF_DESERIALIZER
+                KafkaDeserializerTypes.STRING_DESERIALIZER
             );
             
-            consumer.subscribe(Collections.singleton(PROTO_TOPIC));
-            log.info("Subscribed to topic: {}", PROTO_TOPIC);
+            consumer.subscribe(Collections.singleton(stringTopic));
+            log.info("Subscribed to topic: {}", stringTopic);
             
             while (running.get()) {
                 try {
-                    ConsumerRecords<String, Car> records = consumer.poll(Duration.ofMillis(1000));
+                    ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
                     
-                    for (ConsumerRecord<String, Car> carRecord : records) {
-                        log.info("Consumed Car Record - Key: {}, Value: {}, Partition: {}, Offset: {}", 
-                            carRecord.key(),
-                            carRecord.value(), 
-                            carRecord.partition(),
-                            carRecord.offset()
+                    for (ConsumerRecord<String, String> record : records) {
+                        log.info("Consumed Record - Key: {}, Value: {}, Partition: {}, Offset: {}", 
+                            record.key(),
+                            record.value(), 
+                            record.partition(),
+                            record.offset()
                         );
                     }
                     
@@ -99,7 +100,7 @@ public class CarConsumerService implements SmartLifecycle {
                         consumer.commitAsync();
                     }
                     
-                } catch (WakeupException e) {
+                } catch (WakeupException _) {
                     log.info("Consumer wakeup called, shutting down...");
                     break;
                 }
